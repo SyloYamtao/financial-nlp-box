@@ -92,7 +92,7 @@ const FinancialStdPage = () => {
     setError('');
     setResult('');
     try {
-      const response = await fetch('http://172.20.116.213:8000/api/financial/std', {
+      const response = await fetch('http://127.0.0.1:8000/api/financial/std', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

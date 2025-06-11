@@ -4,6 +4,8 @@ import pandas as pd
 from tqdm import tqdm
 import logging
 from dotenv import load_dotenv
+import os
+import pathlib
 
 load_dotenv()
 import torch
@@ -20,10 +22,14 @@ embedding_function = model.dense.SentenceTransformerEmbeddingFunction(
 )
 
 # 文件路径
-file_path = "backend/data/万条金融标准术语_100.csv"
+file_path = "../backend/data/万条金融标准术语_100.csv"
 # 全数据文件路径
-# file_path = "backend/data/万条金融标准术语.csv"
-db_path = "backend/db/financial_terms_bge_m3.db"
+# file_path = "../backend/data/万条金融标准术语.csv"
+db_path = "../backend/db/financial_terms_bge_m3.db"
+
+# 确保数据库目录存在
+db_dir = os.path.expanduser(os.path.dirname(db_path))
+pathlib.Path(db_dir).mkdir(parents=True, exist_ok=True)
 
 # 连接到 Milvus
 client = MilvusClient(db_path)

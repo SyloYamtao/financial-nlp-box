@@ -7,7 +7,7 @@ import FinancialCorrPage from './pages/financial_corr_page';
 import FinancialAbbrPage from './pages/financial_abbr_page';
 import FinancialGenPage from './pages/financial_gen_page';
 
-const FinancialWelcomePage = () => {
+const WelcomePage = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <img src="/images/financial-img.png" alt="金融文本处理" className="w-96 h-auto mb-8" />
@@ -17,7 +17,7 @@ const FinancialWelcomePage = () => {
   );
 };
 
-const FinancialApp = () => {
+const App = () => {
   const [sidebarWidth, setSidebarWidth] = useState(250);
 
   const handleResize = (e) => {
@@ -39,7 +39,7 @@ const FinancialApp = () => {
         />
         <main className="flex-1 overflow-y-auto p-5">
           <Routes>
-            <Route path="/financial" element={<FinancialWelcomePage />} />
+            <Route path="/financial" element={<WelcomePage />} />
             <Route path="/financial/ner" element={<FinancialNERPage />} />
             <Route path="/financial/std" element={<FinancialStdPage />} />
             <Route path="/financial/corr" element={<FinancialCorrPage />} />
@@ -52,4 +52,4 @@ const FinancialApp = () => {
   );
 };
 
-export default FinancialApp; 
+export default App; 

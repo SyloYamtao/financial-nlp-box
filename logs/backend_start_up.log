@@ -1,0 +1,21 @@
+$ uvicorn main:app --reload --port 8000 --host 127.0.0.1
+
+INFO:     Will watch for changes in these directories: ['/Users/zhangwufei/Documents/LLM_PROJECT/PYTHON/financial-nlp-box/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [82657] using WatchFiles
+/opt/miniconda3/envs/financial-nlp-box/lib/python3.11/site-packages/langchain/chat_models/__init__.py:33: LangChainDeprecationWarning: Importing chat models from langchain is deprecated. Importing from langchain will no longer be supported as of langchain==0.2.0. Please import from langchain-community instead:
+
+`from langchain_community.chat_models import ChatOpenAI`.
+
+To install langchain-community run `pip install -U langchain-community`.
+  warnings.warn(
+Some weights of the model checkpoint at dslim/bert-base-NER were not used when initializing BertForTokenClassification: ['bert.pooler.dense.bias', 'bert.pooler.dense.weight']
+- This IS expected if you are initializing BertForTokenClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertForTokenClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+INFO:datasets:PyTorch version 2.2.2 available.
+INFO:sentence_transformers.SentenceTransformer:Use pytorch device_name: mps
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: BAAI/bge-m3
+DEBUG:pymilvus.milvus_client.milvus_client:Created new connection using: bf0f92adf85f4a47b9d5d16f01cfc0fb
+INFO:     Started server process [82659]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './FinancialIndex.css';
-import FinancialApp from './FinancialApp';
-import reportFinancialWebVitals from './FinancialReportWebVitals';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <FinancialApp />
+    <App />
   </React.StrictMode>
 );
 
 // 性能监控
-reportFinancialWebVitals(); 
+reportWebVitals(); 

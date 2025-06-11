@@ -1,11 +1,11 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, ConfigDict
-from services.ner_service import NERService
-from services.std_service import StdService
-from services.abbr_service import AbbrService
-from services.corr_service import CorrService
-from services.gen_service import GenService
+from services.financial_ner_service import FinancialNERService
+from services.financial_std_service import FinancialStdService
+from services.financial_abbr_service import FinancialAbbrService
+from services.financial_corr_service import FinancialCorrService
+from services.financial_gen_service import FinancialGenService
 from typing import List, Dict, Optional, Literal, Union, Any
 import logging
 
@@ -26,11 +26,11 @@ app.add_middleware(
 )
 
 # 初始化各个服务
-ner_service = NERService()  # 命名实体识别服务
-standardization_service = StdService()  # 术语标准化服务
-abbr_service = AbbrService()  # 缩写扩展服务
-gen_service = GenService()  # 文本生成服务
-corr_service = CorrService()  # 拼写纠正服务
+ner_service = FinancialNERService()  # 命名实体识别服务
+standardization_service = FinancialStdService()  # 术语标准化服务
+abbr_service = FinancialAbbrService()  # 缩写扩展服务
+gen_service = FinancialGenService()  # 文本生成服务
+corr_service = FinancialCorrService()  # 拼写纠正服务
 
 # 基础模型类
 class BaseInputModel(BaseModel):
@@ -161,7 +161,7 @@ class GenInput(BaseInputModel):
     )
 
 # API 端点：术语标准化
-@app.post("/api/std")
+@app.post("/api/financial/std")
 async def standardization(input: TextInput):
     try:
         # 记录请求信息
@@ -175,7 +175,7 @@ async def standardization(input: TextInput):
         ner_results = ner_service.process(input.text, input.options, term_types)
 
         # 初始化标准化服务
-        standardization_service = StdService(
+        standardization_service = FinancialStdService(
             provider=input.embeddingOptions.provider,
             model=input.embeddingOptions.model,
             db_path=f"db/{input.embeddingOptions.dbName}.db",
@@ -207,7 +207,7 @@ async def standardization(input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 # API 端点：命名实体识别
-@app.post("/api/ner")
+@app.post("/api/financial/ner")
 async def ner(input: TextInput):
     try:
         logger.info(f"Received NER request: text={input.text}, options={input.options}, termTypes={input.termTypes}")
@@ -218,7 +218,7 @@ async def ner(input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 # API 端点：拼写纠正
-@app.post("/api/corr")
+@app.post("/api/financial/corr")
 async def correct_notes(input: CorrInput):
     try:
         if input.method == "correct_spelling":  # 拼写纠正
@@ -232,7 +232,7 @@ async def correct_notes(input: CorrInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 # API 端点：缩写扩展
-@app.post("/api/abbr")
+@app.post("/api/financial/abbr")
 async def expand_abbreviations(input: AbbrInput):
     try:
         if input.method == "simple_ollama":  # 简单扩展
@@ -259,7 +259,7 @@ async def expand_abbreviations(input: AbbrInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 # API 端点：医疗文本生成
-@app.post("/api/gen")
+@app.post("/api/financial/gen")
 async def generate_medical_content(input: GenInput):
     try:
         if input.method == "generate_medical_note":  # 生成病历
