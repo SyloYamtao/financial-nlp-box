@@ -28,6 +28,7 @@ pip install -r requirements_mac_no_GPU.txt
 ```bash
 python tools/create_financial_terms_db.py 
 ```
+执行成功后,会在项目的backend/db下出现db文件:`financial_terms_bge_m3.db`
 
 7. 使用本地下载的 HuggingFace 模型
 * 设置 HuggingFace 本地模型文件目录 `HF_MODEL_PATH` 环境变量：
