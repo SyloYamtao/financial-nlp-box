@@ -89,3 +89,5 @@ uvicorn main:app --reload --port 8000 --host 127.0.0.1
 ![corr.png](img/corr.png)
 #### GEN
 ![gen.png](img/gen.png)
+
+![gen-1.png](img/gen-1.png)
