@@ -78,3 +78,9 @@ cd backend/
 # 启动
 uvicorn main:app --reload --port 8000 --host 127.0.0.1
 ```
+
+### 项目演示
+#### NER
+![ner.png](img/ner.png)
+#### STD
+![std.png](img/std.png)

@@ -26,15 +26,13 @@ class FinancialStdService:
         初始化标准化服务
         
         Args:
-            provider: 嵌入模型提供商 (openai/bedrock/huggingface)
+            provider: 嵌入模型提供商 (huggingface)
             model: 使用的模型名称
             db_path: Milvus 数据库路径
             collection_name: 集合名称
         """
         # 根据 provider 字符串匹配正确的枚举值
         provider_mapping = {
-            'openai': EmbeddingProvider.OPENAI,
-            'bedrock': EmbeddingProvider.BEDROCK,
             'huggingface': EmbeddingProvider.HUGGINGFACE
         }
         
@@ -54,13 +52,14 @@ class FinancialStdService:
         self.collection_name = collection_name
         self.client.load_collection(self.collection_name)
 
-    def search_similar_terms(self, query: str, limit: int = 5) -> List[Dict]:
+    def search_similar_terms(self, query: str, limit: int = 5, threshold: float = 0.1) -> List[Dict]:
         """
         搜索与查询文本相似的金融术语
         
         Args:
             query: 查询文本
             limit: 返回结果的最大数量
+            threshold: 相似度阈值，低于此值的结果将被过滤
             
         Returns:
             包含相似术语信息的列表，每个术语包含：
@@ -71,6 +70,7 @@ class FinancialStdService:
             - concept_class_id: 概念类别ID
             - standard_concept: 是否标准概念
             - concept_code: 概念代码
+            - synonyms: 同义词
             - distance: 相似度距离
         """
         # 获取查询的向量表示
@@ -84,9 +84,8 @@ class FinancialStdService:
             "output_fields": [
                 "concept_id", "concept_name", "domain_id", 
                 "vocabulary_id", "concept_class_id", "standard_concept",
-                "concept_code"
+                "concept_code", "synonyms"
             ],
-            # "filter": "domain_id == 'Financial'"
         }
         
         # 搜索相似项
@@ -94,16 +93,21 @@ class FinancialStdService:
 
         results = []
         for hit in search_result[0]:
-            results.append({
-                "concept_id": hit['entity'].get('concept_id'),
-                "concept_name": hit['entity'].get('concept_name'),
-                "domain_id": hit['entity'].get('domain_id'),
-                "vocabulary_id": hit['entity'].get('vocabulary_id'),
-                "concept_class_id": hit['entity'].get('concept_class_id'),
-                "standard_concept": hit['entity'].get('standard_concept'),
-                "concept_code": hit['entity'].get('concept_code'),
-                "distance": float(hit['distance'])
-            })
+            # 计算相似度分数（1 - 距离）
+            similarity = 1 - float(hit['distance'])
+            if similarity >= threshold:
+                results.append({
+                    "concept_id": hit['entity'].get('concept_id'),
+                    "concept_name": hit['entity'].get('concept_name'),
+                    "domain_id": hit['entity'].get('domain_id'),
+                    "vocabulary_id": hit['entity'].get('vocabulary_id'),
+                    "concept_class_id": hit['entity'].get('concept_class_id'),
+                    "standard_concept": hit['entity'].get('standard_concept'),
+                    "concept_code": hit['entity'].get('concept_code'),
+                    "synonyms": hit['entity'].get('synonyms'),
+                    "distance": float(hit['distance']),
+                    "similarity": similarity
+                })
 
         return results
 

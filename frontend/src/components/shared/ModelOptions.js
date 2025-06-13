@@ -50,9 +50,8 @@ export const EmbeddingOptions = ({ options, onChange }) => {
           value={options.provider}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          disabled
         >
-          <option value="openai">OpenAI</option>
-          <option value="bedrock">Bedrock</option>
           <option value="huggingface">HuggingFace</option>
         </select>
       </div>
@@ -65,6 +64,7 @@ export const EmbeddingOptions = ({ options, onChange }) => {
           value={options.model}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          disabled
         />
       </div>
       
@@ -76,6 +76,7 @@ export const EmbeddingOptions = ({ options, onChange }) => {
           value={options.dbName}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          disabled
         />
       </div>
       
@@ -87,6 +88,7 @@ export const EmbeddingOptions = ({ options, onChange }) => {
           value={options.collectionName}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+          disabled
         />
       </div>
     </div>

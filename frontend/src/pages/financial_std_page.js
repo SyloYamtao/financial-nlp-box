@@ -113,11 +113,11 @@ const FinancialStdPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">金融术语标准化 💰</h1>
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-12 gap-6">
         {/* 左侧面板：文本输入和嵌入选项 */}
-        <div className="col-span-2 bg-white shadow-md rounded-lg p-6">
+        <div className="col-span-4 bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">输入金融术语</h2>
           <TextInput
             value={input}
@@ -137,8 +137,8 @@ const FinancialStdPage = () => {
           </button>
         </div>
 
-        {/* 右侧面板：选项列表 */}
-        <div className="bg-white shadow-md rounded-lg p-6">
+        {/* 中间面板：选项列表 */}
+        <div className="col-span-3 bg-white shadow-md rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">术语类型</h2>
           <div className="space-y-3">
             {[
@@ -202,25 +202,81 @@ const FinancialStdPage = () => {
             </div>
           </div>
         </div>
+
+        {/* 右侧面板：结果显示 */}
+        {(error || result) && (
+          <div className="col-span-5 bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">标准化结果</h2>
+            {error && (
+              <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                <p className="font-bold">错误：</p>
+                <p>{error}</p>
+              </div>
+            )}
+            {result && (
+              <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+                <p className="font-bold">结果：</p>
+                <div className="mt-4">
+                  {JSON.parse(result).standardized_terms.map((term, index) => (
+                    <div key={index} className="mb-6">
+                      <div className="mb-4">
+                        <h3 className="text-lg font-medium text-gray-700">原始术语：{term.original_term}</h3>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {term.standardized_results.map((result, idx) => (
+                          <div key={idx} className="bg-white p-4 rounded-lg shadow">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">概念名称</p>
+                                <p className="text-gray-900 break-words">{result.concept_name}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">相似度</p>
+                                <p className="text-gray-900">{(result.similarity * 100).toFixed(2)}%</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">概念ID</p>
+                                <p className="text-gray-900 break-words">{result.concept_id}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">概念代码</p>
+                                <p className="text-gray-900 break-words">{result.concept_code}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">领域</p>
+                                <p className="text-gray-900 break-words">{result.domain_id}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">词汇表</p>
+                                <p className="text-gray-900 break-words">{result.vocabulary_id}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">概念类别</p>
+                                <p className="text-gray-900 break-words">{result.concept_class_id}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">标准概念</p>
+                                <p className="text-gray-900 break-words">{result.standard_concept}</p>
+                              </div>
+                              {result.synonyms && (
+                                <div className="col-span-2">
+                                  <p className="text-sm font-medium text-gray-500">同义词</p>
+                                  <p className="text-gray-900 break-words">{result.synonyms}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      
-      {/* 结果显示区域 */}
-      {(error || result) && (
-        <div className="mt-6">
-          {error && (
-            <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-              <p className="font-bold">错误：</p>
-              <p>{error}</p>
-            </div>
-          )}
-          {result && (
-            <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-              <p className="font-bold">结果：</p>
-              <pre>{result}</pre>
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="flex items-center text-yellow-700 bg-yellow-100 p-4 rounded-md mt-6">
         <AlertCircle className="mr-2" />
