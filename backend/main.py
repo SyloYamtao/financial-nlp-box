@@ -167,13 +167,6 @@ async def standardization(input: TextInput):
         # 记录请求信息
         logger.info(f"Received request: text={input.text}, options={input.options}, embeddingOptions={input.embeddingOptions}")
 
-        # 配置术语类型
-        all_financial_terms = input.options.pop('allfinancialTerms', False)
-        term_types = {'allfinancialTerms': all_financial_terms}
-
-        # 进行命名实体识别
-        ner_results = ner_service.process(input.text, input.options, term_types)
-
         # 初始化标准化服务
         standardization_service = FinancialStdService(
             provider=input.embeddingOptions.provider,
@@ -182,24 +175,18 @@ async def standardization(input: TextInput):
             collection_name=input.embeddingOptions.collectionName
         )
 
-        # 获取识别到的实体
-        entities = ner_results.get('entities', [])
-        if not entities:
-            return {"message": "No financial terms have been recognized", "standardized_terms": []}
-
-        # 标准化每个实体
-        standardized_results = []
-        for entity in entities:
-            std_result = standardization_service.search_similar_terms(entity['word'])
-            standardized_results.append({
-                "original_term": entity['word'],
-                "entity_group": entity['entity_group'],
-                "standardized_results": std_result
-            })
+        # 直接进行标准化搜索
+        std_results = standardization_service.search_similar_terms(input.text, limit=5, threshold=0.1)
+        
+        if not std_results:
+            return {"message": "No similar financial terms found", "standardized_terms": []}
 
         return {
-            "message": f"{len(entities)} financial terms have been recognized and standardized",
-            "standardized_terms": standardized_results
+            "message": f"Found {len(std_results)} similar financial terms",
+            "standardized_terms": [{
+                "original_term": input.text,
+                "standardized_results": std_results
+            }]
         }
 
     except Exception as e:
