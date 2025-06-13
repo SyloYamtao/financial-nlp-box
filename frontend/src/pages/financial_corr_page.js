@@ -9,8 +9,8 @@ const FinancialCorrPage = () => {
   
   // LLM options
   const [llmOptions, setLlmOptions] = useState({
-    provider: 'ollama',
-    model: 'qwen2.5:7b'
+    provider: 'deepseek',
+    model: 'deepseek-chat'
   });
 
   const handleLlmOptionChange = (e) => {

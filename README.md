@@ -83,3 +83,7 @@ uvicorn main:app --reload --port 8000 --host 127.0.0.1
 ![ner.png](img/ner.png)
 #### STD
 ![std.png](img/std.png)
+#### ABBR
+![abbr.png](img/abbr.png)
+#### CORR
+![corr.png](img/corr.png)
