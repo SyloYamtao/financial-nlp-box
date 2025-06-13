@@ -64,7 +64,6 @@ mkdir -p BAAI/bge-m3
 根据你使用的命令行工具，在 `~/.bashrc` 或 `~/.zshrc` 中配置 `OPENAI_API_KEY` 环境变量：
 
 ```shell
-export OPENAI_API_KEY="xxxx"
 export DEEPSEEK_API_KEY="xxxx"
 ```
 

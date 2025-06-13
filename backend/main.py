@@ -6,6 +6,7 @@ from services.financial_std_service import FinancialStdService
 from services.financial_abbr_service import FinancialAbbrService
 from services.financial_corr_service import FinancialCorrService
 from services.financial_gen_service import FinancialGenService
+from routes.financial_abbr import router as abbr_router
 from typing import List, Dict, Optional, Literal, Union, Any
 import logging
 
@@ -31,6 +32,9 @@ standardization_service = FinancialStdService()  # 术语标准化服务
 abbr_service = FinancialAbbrService()  # 缩写扩展服务
 gen_service = FinancialGenService()  # 文本生成服务
 corr_service = FinancialCorrService()  # 拼写纠正服务
+
+# 包含路由
+app.include_router(abbr_router)
 
 # 基础模型类
 class BaseInputModel(BaseModel):
