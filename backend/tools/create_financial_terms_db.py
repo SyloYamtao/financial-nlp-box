@@ -22,9 +22,8 @@ embedding_function = model.dense.SentenceTransformerEmbeddingFunction(
 )
 
 # 文件路径
-file_path = "../backend/data/万条金融标准术语_100.csv"
 # 全数据文件路径
-# file_path = "../backend/data/万条金融标准术语.csv"
+file_path = "../backend/data/万条金融标准术语.csv"
 db_path = "../backend/db/financial_terms_bge_m3.db"
 
 # 确保数据库目录存在

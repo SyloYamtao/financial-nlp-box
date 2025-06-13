@@ -138,7 +138,7 @@ class PatientInfo(BaseModel):
         None,
         description="患者性别"
     )
-    medicalHistory: Optional[str] = Field(
+    financialHistory: Optional[str] = Field(
         None,
         description="既往病史"
     )
@@ -155,8 +155,8 @@ class GenInput(BaseInputModel):
         default="",
         description="治疗方案"
     )
-    method: Literal["generate_medical_note", "generate_differential_diagnosis", "generate_treatment_plan"] = Field(
-        default="generate_medical_note",
+    method: Literal["generate_financial_note", "generate_differential_diagnosis", "generate_treatment_plan"] = Field(
+        default="generate_financial_note",
         description="生成方法"
     )
 
@@ -168,8 +168,8 @@ async def standardization(input: TextInput):
         logger.info(f"Received request: text={input.text}, options={input.options}, embeddingOptions={input.embeddingOptions}")
 
         # 配置术语类型
-        all_medical_terms = input.options.pop('allMedicalTerms', False)
-        term_types = {'allMedicalTerms': all_medical_terms}
+        all_financial_terms = input.options.pop('allfinancialTerms', False)
+        term_types = {'allfinancialTerms': all_financial_terms}
 
         # 进行命名实体识别
         ner_results = ner_service.process(input.text, input.options, term_types)
@@ -185,7 +185,7 @@ async def standardization(input: TextInput):
         # 获取识别到的实体
         entities = ner_results.get('entities', [])
         if not entities:
-            return {"message": "No medical terms have been recognized", "standardized_terms": []}
+            return {"message": "No financial terms have been recognized", "standardized_terms": []}
 
         # 标准化每个实体
         standardized_results = []
@@ -198,7 +198,7 @@ async def standardization(input: TextInput):
             })
 
         return {
-            "message": f"{len(entities)} medical terms have been recognized and standardized",
+            "message": f"{len(entities)} financial terms have been recognized and standardized",
             "standardized_terms": standardized_results
         }
 
@@ -260,10 +260,10 @@ async def expand_abbreviations(input: AbbrInput):
 
 # API 端点：医疗文本生成
 @app.post("/api/financial/gen")
-async def generate_medical_content(input: GenInput):
+async def generate_financial_content(input: GenInput):
     try:
-        if input.method == "generate_medical_note":  # 生成病历
-            return gen_service.generate_medical_note(
+        if input.method == "generate_financial_note":  # 生成病历
+            return gen_service.generate_financial_note(
                 input.patient_info,
                 input.symptoms,
                 input.diagnosis,
@@ -284,7 +284,7 @@ async def generate_medical_content(input: GenInput):
         else:
             raise HTTPException(status_code=400, detail="Invalid method")
     except Exception as e:
-        logger.error(f"Error in medical content generation: {str(e)}")
+        logger.error(f"Error in financial content generation: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # 启动服务器
