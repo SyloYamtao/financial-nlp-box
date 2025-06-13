@@ -31,8 +31,8 @@ const FinancialGenPage = () => {
 
   // LLM 选项
   const [llmOptions, setLlmOptions] = useState({
-    provider: 'ollama',
-    model: 'qwen2.5:7b'
+    provider: 'deepseek',
+    model: 'deepseek-chat'
   });
 
   const handleMarketInfoChange = (e) => {
@@ -45,10 +45,21 @@ const FinancialGenPage = () => {
 
   const handleLlmOptionChange = (e) => {
     const { name, value } = e.target;
-    setLlmOptions(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setLlmOptions(prev => {
+      const newOptions = {
+        ...prev,
+        [name]: value
+      };
+      // 根据 provider 设置对应的默认模型
+      if (name === 'provider') {
+        if (value === 'deepseek') {
+          newOptions.model = 'deepseek-coder:chat';
+        } else if (value === 'ollama') {
+          newOptions.model = 'qwen2.5:7b';
+        }
+      }
+      return newOptions;
+    });
   };
 
   const handleIndicatorsChange = (e) => {
