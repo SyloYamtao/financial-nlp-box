@@ -148,19 +148,14 @@ class PatientInfo(BaseModel):
     )
 
 class GenInput(BaseInputModel):
-    """医疗内容生成输入模型"""
-    patient_info: PatientInfo = Field(..., description="患者信息")
-    symptoms: List[str] = Field(..., description="症状列表")
-    diagnosis: str = Field(
-        default="",
-        description="诊断结果"
-    )
-    treatment: str = Field(
-        default="",
-        description="治疗方案"
-    )
-    method: Literal["generate_financial_note", "generate_differential_diagnosis", "generate_treatment_plan"] = Field(
-        default="generate_financial_note",
+    """金融内容生成输入模型"""
+    market_info: Dict = Field(..., description="市场信息")
+    indicators: List[str] = Field(..., description="技术指标列表")
+    analysis: str = Field(default="", description="分析结果")
+    investment_goals: str = Field(default="", description="投资目标")
+    risk_profile: str = Field(default="", description="风险偏好")
+    method: Literal["generate_financial_report", "generate_market_analysis", "generate_investment_plan"] = Field(
+        default="generate_financial_report",
         description="生成方法"
     )
 
@@ -249,27 +244,26 @@ async def expand_abbreviations(input: AbbrInput):
         logger.error(f"Error in abbreviation expansion: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# API 端点：医疗文本生成
+# API 端点：金融内容生成
 @app.post("/api/financial/gen")
 async def generate_financial_content(input: GenInput):
     try:
-        if input.method == "generate_financial_note":  # 生成病历
-            return gen_service.generate_financial_note(
-                input.patient_info,
-                input.symptoms,
-                input.diagnosis,
-                input.treatment,
+        if input.method == "generate_financial_report":  # 生成金融报告
+            return gen_service.generate_financial_report(
+                input.market_info,
+                input.indicators,
+                input.analysis,
                 input.llmOptions
             )
-        elif input.method == "generate_differential_diagnosis":  # 生成鉴别诊断
-            return gen_service.generate_differential_diagnosis(
-                input.symptoms,
+        elif input.method == "generate_market_analysis":  # 生成市场分析
+            return gen_service.generate_market_analysis(
+                input.market_info,
                 input.llmOptions
             )
-        elif input.method == "generate_treatment_plan":  # 生成治疗计划
-            return gen_service.generate_treatment_plan(
-                input.diagnosis,
-                input.patient_info,
+        elif input.method == "generate_investment_plan":  # 生成投资计划
+            return gen_service.generate_investment_plan(
+                input.investment_goals,
+                input.risk_profile,
                 input.llmOptions
             )
         else:

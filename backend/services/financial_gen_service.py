@@ -1,13 +1,80 @@
 from langchain_community.llms import Ollama
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from typing import Dict, List
+from langchain.schema.runnable import Runnable
+from langchain.schema.messages import HumanMessage, SystemMessage
+from typing import Dict, List, Any, Optional
 import os
 import logging
+import requests
+import json
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+class DeepseekLLM(Runnable):
+    """Deepseek LLM 实现"""
+    
+    def __init__(self, model_name: str):
+        self.model = "deepseek-chat"  # 使用正确的模型名称
+        self.api_key = os.getenv("DEEPSEEK_API_KEY")
+        self.api_url = "https://api.deepseek.com/v1/chat/completions"  # 更新API URL
+        logger.info(f"初始化DeepseekLLM: model={self.model}, api_key前6位={self.api_key[:6] if self.api_key else 'None'}")
+        
+    def invoke(self, input: Dict[str, Any], config: Optional[Dict[str, Any]] = None) -> str:
+        """实现Runnable接口的invoke方法"""
+        # 处理不同类型的输入
+        if isinstance(input, dict) and "messages" in input:
+            messages = input["messages"]
+        elif hasattr(input, "messages"):
+            messages = input.messages
+        else:
+            raise ValueError("Invalid input format")
+        
+        # 转换消息格式
+        formatted_messages = []
+        for msg in messages:
+            if isinstance(msg, (HumanMessage, SystemMessage)):
+                formatted_messages.append({
+                    "role": "user" if isinstance(msg, HumanMessage) else "system",
+                    "content": msg.content
+                })
+            elif isinstance(msg, tuple):
+                formatted_messages.append({
+                    "role": msg[0],
+                    "content": msg[1]
+                })
+            elif isinstance(msg, dict):
+                formatted_messages.append(msg)
+        
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "model": self.model,
+            "messages": formatted_messages,
+            "temperature": 0
+        }
+        
+        logger.info("发送请求到Deepseek API:")
+        logger.info(f"URL: {self.api_url}")
+        logger.info(f"Headers: {json.dumps(headers, indent=2)}")
+        logger.info(f"Request Data: {json.dumps(data, indent=2)}")
+        
+        try:
+            response = requests.post(self.api_url, headers=headers, json=data)
+            response.raise_for_status()
+            result = response.json()
+            logger.info(f"API响应: {json.dumps(result, indent=2)}")
+            return result['choices'][0]['message']['content']
+        except requests.exceptions.RequestException as e:
+            logger.error(f"API请求失败: {str(e)}")
+            logger.error(f"响应状态码: {e.response.status_code if hasattr(e, 'response') else 'N/A'}")
+            logger.error(f"响应内容: {e.response.text if hasattr(e, 'response') else 'N/A'}")
+            raise
 
 class FinancialGenService:
     """
@@ -31,7 +98,9 @@ class FinancialGenService:
             ValueError: 当提供不支持的模型提供商时
         """
         provider = llm_options.get("provider", "ollama")
-        model = llm_options.get("model", "llama3.1:8b")
+        model = llm_options.get("model", "deepseek-chat")  # 更新默认模型名称
+        
+        logger.info(f"创建LLM实例: provider={provider}, model={model}")
         
         if provider == "ollama":
             return Ollama(model=model)
@@ -41,6 +110,8 @@ class FinancialGenService:
                 temperature=0.7,
                 api_key=os.getenv("OPENAI_API_KEY")
             )
+        elif provider == "deepseek":
+            return DeepseekLLM(model)
         else:
             raise ValueError(f"Unsupported LLM provider: {provider}")
 
